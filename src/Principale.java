@@ -373,29 +373,43 @@ public class Principale extends javax.swing.JFrame {
             }
            
             double det(){
-                double L=0;
+//                double L1 = 0;
+//                double L2 = 0;
                 
+                // V - LI 
                 mat[0][0] = varx;
                 mat[1][1] = vary;
                 mat[0][1] = cov;
                 mat[1][0] = cov;
-                // V - LI 
+
+                 // det(V - LI) 
+                double p1 = 1;
+                double p2 = 1;
                 for(int i=0;i<2;i++){
                     for(int j=0;j<2;j++){
                         if (i == j){
-                            mat[i][j] = mat[i][j]-L;
+                            p1 = p1 * mat[i][j];
+                        }else{
+                            p2 = p2 * mat[i][j];
                         }
                     }
                 }
-                // det(V - LI) 
-                double det=1;
-                for(int i=0;i<2;i++){
-                    for(int j=0;j<2;j++){
-                        if (i == j){
-                            det = det  mat[i][j];
-                        }
-                    }
-                }
+                double det = p1 - p2; // Équation quadratique (2eme degré) 
+//                double delta = 
+                
+                // les vecteur propres U1,U2
+//                double x1=0;
+//                double x2=0;
+//                double [][] val = new double [2][1];
+//                val [0][0] = x1;
+//                val [0][1] = x2;
+//                for(int i=0;i<2;i++){
+//                    for(int j=0;j<2;j++){
+//                        if (i == j){
+//                            det = det  mat[i][j];
+//                        }
+//                    }
+//                }
                 return 0;
             }
         }
