@@ -92,6 +92,11 @@ public class Principale extends javax.swing.JFrame {
         });
 
         m_rectangle.setText("m.rectangle");
+        m_rectangle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                m_rectangleActionPerformed(evt);
+            }
+        });
 
         ACP_nonNormée.setText("ACP non normée");
 
@@ -203,6 +208,20 @@ public class Principale extends javax.swing.JFrame {
     private void nvActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nvActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_nvActionPerformed
+
+    private void m_rectangleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_rectangleActionPerformed
+        // TODO add your handling code here:
+        MR mr = new MR();
+        mr.show();
+        mcar mca= new mcar();
+        mca.sai();
+        mrec mre = new mrec(mca.varx(),mca.vary(),mca.cov());
+//        
+//        DecimalFormat dtime = new DecimalFormat("#.##"); 
+//        mr.L1.setText(String.valueOf(dtime.format(mre.det())));
+        mr.L1.setText(String.valueOf(mre.det()));
+        
+    }//GEN-LAST:event_m_rectangleActionPerformed
 
     /**
      * @param args the command line arguments
@@ -373,44 +392,45 @@ public class Principale extends javax.swing.JFrame {
             }
            
             double det(){
-//                double L1 = 0;
-//                double L2 = 0;
-                
-                // V - LI 
+                DecimalFormat dtime = new DecimalFormat("#.##"); 
+                // matrice var-cov 
                 mat[0][0] = varx;
                 mat[1][1] = vary;
                 mat[0][1] = cov;
                 mat[1][0] = cov;
+                System.out.println("----------------------------------");
+                System.out.println("varx: " + varx + " vary: " + vary + " cov: " + cov);
 
-                 // det(V - LI) 
-                double p1 = 1;
-                double p2 = 1;
-                for(int i=0;i<2;i++){
-                    for(int j=0;j<2;j++){
-                        if (i == j){
-                            p1 = p1 * mat[i][j];
-                        }else{
-                            p2 = p2 * mat[i][j];
-                        }
-                    }
-                }
-                double det = p1 - p2; // Équation quadratique (2eme degré) 
-//                double delta = 
-                
-                // les vecteur propres U1,U2
-//                double x1=0;
-//                double x2=0;
-//                double [][] val = new double [2][1];
-//                val [0][0] = x1;
-//                val [0][1] = x2;
-//                for(int i=0;i<2;i++){
-//                    for(int j=0;j<2;j++){
-//                        if (i == j){
-//                            det = det  mat[i][j];
-//                        }
-//                    }
+                // det(V - LI) pour chrcher le delta de ax2+bx+c et L1, L2
+                int a = 1;
+                double b;
+                if (mat[0][0]<0 && mat[1][1]<0){
+                    b = varx+varx;
+                }else if (mat[0][0]>0 && mat[1][1]>0){
+                    b = -(varx+varx);
+                }else // if ( (mat[0][0]>0 && mat[1][1]<0) || (mat[0][0]<0 && mat[1][1]>0) ){
+                    b = varx + vary;
 //                }
-                return 0;
+                double c = mat[0][0]*mat[1][1] - mat[0][1]*mat[1][0];
+                System.out.println("a=" + dtime.format(a) +" b=" + b + " c=" + dtime.format(c));
+System.out.println("-4ac = " + 4*c );
+System.out.println("b^2 = " + b*b );
+                double delta = (b*b)-(4*a*c);
+                System.out.println("delta : " + delta);
+                double L2 =0,L1 = 0;
+            
+                if (delta > 0){
+                    L1 = (-b-Math.sqrt(delta))/(2*a);
+                    L2 = (-b+Math.sqrt(delta))/(2*a);
+                }else if(delta == 0){
+                    L1 = -2/(2*a);
+                    L2 = -2/(2*a);
+                }else{
+                    System.out.println("delta < 0 so there is no solution for this equation");
+                }
+                System.out.println("L1 : " + dtime.format(L1));
+                System.out.println("L2 : " + dtime.format(L2));
+                return L2;
             }
         }
         

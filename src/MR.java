@@ -130,7 +130,7 @@ public class MR extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel L1;
+    public javax.swing.JLabel L1;
     private javax.swing.JLabel La1;
     private javax.swing.JLabel La2;
     private javax.swing.JLabel U1;
