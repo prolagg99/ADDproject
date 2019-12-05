@@ -1,7 +1,6 @@
 
 import java.text.DecimalFormat;
 import javax.swing.JOptionPane;
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -46,7 +45,7 @@ public class Principale extends javax.swing.JFrame {
 
         jLabel1.setText("N.Var");
 
-        jLabel2.setText("N.Imd");
+        jLabel2.setText("N.Ind");
 
         nv.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -216,11 +215,16 @@ public class Principale extends javax.swing.JFrame {
         mcar mca= new mcar();
         mca.sai();
         mrec mre = new mrec(mca.varx(),mca.vary(),mca.cov());
-//        
-//        DecimalFormat dtime = new DecimalFormat("#.##"); 
-//        mr.L1.setText(String.valueOf(dtime.format(mre.det())));
-        mr.L1.setText(String.valueOf(mre.det()));
+  
+        DecimalFormat dtime = new DecimalFormat("#.##"); 
+        mr.L1.setText(String.valueOf("landa 1 = " + dtime.format(mre.X1())));
         
+        mre.mat();
+        mr.U1.setText(String.valueOf("U1 = (" + dtime.format(mre.alpha1()) + ";" + dtime.format(mre.alpha2()) + ")"));
+        mr.U2.setText(String.valueOf("U2 = (" + dtime.format(-mre.alpha2()) + ";" + dtime.format(mre.alpha1()) + ")"));
+        
+        mr.La1.setText(String.valueOf("D1: y = " + dtime.format(mre.a()) + "x + " + dtime.format(mre.b(mca.moyx(),mca.moyy()))));
+        mr.La2.setText(String.valueOf("D2: y = " + dtime.format(-mre.a()) + "x + " + dtime.format(mre.b2(mca.moyx(),mca.moyy()))));
     }//GEN-LAST:event_m_rectangleActionPerformed
 
     /**
@@ -272,7 +276,7 @@ public class Principale extends javax.swing.JFrame {
     public javax.swing.JTable tab;
     // End of variables declaration//GEN-END:variables
 
-    /* la methode des moindres rectangles */
+    /**** la methode des moindres rectangles ****/
     class mcar{
         int i = Integer.parseInt(ni.getText());
         int v = Integer.parseInt(nv.getText());
@@ -287,7 +291,6 @@ public class Principale extends javax.swing.JFrame {
                     data[ligne][col] = Double.parseDouble((String) tab.getValueAt(ligne,col));
                 }   
             }
-            System.out.println(data);
         }
         
         double moyx(){
@@ -355,11 +358,9 @@ public class Principale extends javax.swing.JFrame {
                     s = s*data[ligne][col];  
                 }
                 xiyi = xiyi + s;
-                System.out.println(xiyi);
                 s=1;
-            }System.out.println(xiyi);
+            }
             xiyi = xiyi/i;
-            System.out.println(xiyi);
             cov = xiyi-(moyx()*moyy());
             return  cov;
         }
@@ -379,59 +380,63 @@ public class Principale extends javax.swing.JFrame {
         }
     }
     
-        /* la methode des moindres rectangles */
+        /**** la methode des moindres rectangles ****/
         class mrec{
-                double varx;
-                double vary;
-                double cov;
-            double[][] mat = new double[2][2];  
+            double[][] mat = new double[2][2]; 
+            int a = 1;
+            double b,c,x1,x2;
+            double delta;
+            
             mrec(double varx,double vary,double cov){
-                this.varx = varx;
-                this.vary = vary;
-                this.cov = cov;
-            }
-           
-            double det(){
-                DecimalFormat dtime = new DecimalFormat("#.##"); 
-                // matrice var-cov 
                 mat[0][0] = varx;
                 mat[1][1] = vary;
                 mat[0][1] = cov;
                 mat[1][0] = cov;
-                System.out.println("----------------------------------");
-                System.out.println("varx: " + varx + " vary: " + vary + " cov: " + cov);
+                System.out.println("mat = " + mat[0][0] + " " + mat[1][1]);
 
-                // det(V - LI) pour chrcher le delta de ax2+bx+c et L1, L2
-                int a = 1;
-                double b;
-                if (mat[0][0]<0 && mat[1][1]<0){
-                    b = varx+varx;
-                }else if (mat[0][0]>0 && mat[1][1]>0){
-                    b = -(varx+varx);
-                }else // if ( (mat[0][0]>0 && mat[1][1]<0) || (mat[0][0]<0 && mat[1][1]>0) ){
-                    b = varx + vary;
-//                }
-                double c = mat[0][0]*mat[1][1] - mat[0][1]*mat[1][0];
-                System.out.println("a=" + dtime.format(a) +" b=" + b + " c=" + dtime.format(c));
-System.out.println("-4ac = " + 4*c );
-System.out.println("b^2 = " + b*b );
-                double delta = (b*b)-(4*a*c);
-                System.out.println("delta : " + delta);
-                double L2 =0,L1 = 0;
+            }
             
-                if (delta > 0){
-                    L1 = (-b-Math.sqrt(delta))/(2*a);
-                    L2 = (-b+Math.sqrt(delta))/(2*a);
-                }else if(delta == 0){
-                    L1 = -2/(2*a);
-                    L2 = -2/(2*a);
-                }else{
-                    System.out.println("delta < 0 so there is no solution for this equation");
-                }
-                System.out.println("L1 : " + dtime.format(L1));
-                System.out.println("L2 : " + dtime.format(L2));
-                return L2;
+            double delB(){
+            return -mat[0][0]-mat[1][1];
+            } 
+            
+            double delC(){
+            return mat[0][0]*mat[1][1]-Math.pow(mat[0][1],2);
+            }
+            
+            double del(){
+            return Math.pow(delB(),2)-4*delC();
+            }
+            
+            double X1(){
+            return (-delB()-Math.sqrt(del()))/(2*a);    
+            }
+            
+            double X2(){
+            return (-delB()+Math.sqrt(del()))/(2*a);  
+            }
+            
+            public void mat(){
+                mat[0][0] = mat[0][0]-X1();
+                mat[1][1] = mat[1][1]-X1();
+            }  
+            
+            double alpha1(){
+                return Math.sqrt(Math.pow(mat[0][1],2)/(Math.pow(mat[0][1],2)+mat[0][0]));
+            }
+            
+            double alpha2(){
+                return (-mat[0][0]*alpha1())/mat[0][1];
+            }
+            
+            double a(){
+                return (alpha2()/alpha1());
+            }
+            double b(double x,double y){
+                return y-(alpha2()/alpha1())*x;
+            }
+            double b2(double x,double y){
+                return y+(alpha2()/alpha1())*x;
             }
         }
-        
 }
