@@ -142,7 +142,7 @@
                     </Column>
                     <Column editable="true" title="V2" type="java.lang.Object">
                       <Data value="0"/>
-                      <Data value="-0.5"/>
+                      <Data value="1.2"/>
                       <Data value="0.5"/>
                       <Data value="0.1"/>
                       <Data value="2.5"/>
@@ -199,6 +199,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="ACP non norm&#xe9;e"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ACP_nonNorm&#xe9;eActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="ACP_norm&#xe9;e">
           <Properties>
