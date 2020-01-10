@@ -48,12 +48,14 @@ public class Principale extends javax.swing.JFrame {
 
         jLabel2.setText("N.Ind");
 
+        nv.setText("2");
         nv.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 nvActionPerformed(evt);
             }
         });
 
+        ni.setText("10");
         ni.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 niActionPerformed(evt);
@@ -175,7 +177,7 @@ public class Principale extends javax.swing.JFrame {
     }//GEN-LAST:event_niActionPerformed
 
     private void m_carréesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_carréesActionPerformed
-        // TODO add your handling code here:
+        this.hide();
     }//GEN-LAST:event_m_carréesActionPerformed
 
     private void m_carréesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_m_carréesMouseClicked
@@ -215,7 +217,7 @@ public class Principale extends javax.swing.JFrame {
     }//GEN-LAST:event_nvActionPerformed
 
     private void m_rectangleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_rectangleActionPerformed
-        // TODO add your handling code here:
+        this.hide();
         MR mr = new MR();
         mr.show();
         mcar mca= new mcar();
@@ -223,35 +225,47 @@ public class Principale extends javax.swing.JFrame {
         mrec mre = new mrec(mca.varx(),mca.vary(),mca.cov());
   
         DecimalFormat dtime = new DecimalFormat("#.##"); 
-        mr.L1.setText(String.valueOf("landa 1 = " + dtime.format(mre.X1())));
+        mr.L1.setText(String.valueOf("landa 1 = " + dtime.format(mre.X2()) + " | landa 2 = " + dtime.format(mre.X1()) ));
         
-        mre.mat();
+        mre.mat(mre.X2());
         mr.U1.setText(String.valueOf("U1 = (" + dtime.format(mre.alpha1()) + ";" + dtime.format(mre.alpha2()) + ")"));
-        mr.U2.setText(String.valueOf("U2 = (" + dtime.format(-mre.alpha2()) + ";" + dtime.format(mre.alpha1()) + ")"));
-        
-//        mr.U1.setText(String.valueOf("U1 = (" + mre.alpha1() + ";" + mre.alpha2() + ")"));
-//        mr.U2.setText(String.valueOf("U2 = (" + -mre.alpha2() + ";" + mre.alpha1() + ")"));
-        
         mr.La1.setText(String.valueOf("D1: y = " + dtime.format(mre.a()) + "x + " + dtime.format(mre.b(mca.moyx(),mca.moyy()))));
-        mr.La2.setText(String.valueOf("D2: y = " + dtime.format(-mre.a()) + "x + " + dtime.format(mre.b2(mca.moyx(),mca.moyy()))));
+
+        mre.mat(mre.X1());
+        mr.U2.setText(String.valueOf("U2 = (" + dtime.format(mre.alpha1()) + ";" + dtime.format(mre.alpha2()) + ")"));
+//        mr.U2.setText(String.valueOf("U2 = (" + dtime.format(-mre.alpha2()) + ";" + dtime.format(mre.alpha1()) + ")"));
+        mr.La2.setText(String.valueOf("D2: y = " + dtime.format(mre.a()) + "x + " + dtime.format(mre.b(mca.moyx(),mca.moyy()))));
     }//GEN-LAST:event_m_rectangleActionPerformed
 
     private void ACP_nonNorméeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ACP_nonNorméeActionPerformed
-        mcar mca = new mcar();
+        this.hide();
+        ACPN acpn = new ACPN();
+        acpn.show();
+        mcar mca= new mcar();
         mca.sai();
-        
         mrec mre = new mrec(mca.varx(),mca.vary(),mca.cov());
-        mre.mat();
+  
+        DecimalFormat dtime = new DecimalFormat("#.##"); 
+        mre.mat(mre.X2());
+        acpn.U1.setText(String.valueOf("U1 = (" + dtime.format(mre.alpha1()) + ";" + dtime.format(mre.alpha2()) + ")"));
+        
+//        DecimalFormat dtime = new DecimalFormat("#.##"); 
+//        mcar mca = new mcar();
+//        mca.sai();
         
         Acp acp = new Acp(Math.sqrt(mca.varx()), Math.sqrt(mca.vary()));
         acp.setMat(mca.getData());
         
         acp.X(Math.sqrt(mca.moyx()), Math.sqrt(mca.moyy()));
         acp.XX(acp.getMat());
+        
+        // for the U1
+//        mrec mre = new mrec(mca.varx(),mca.vary(),mca.cov());
+//        mre.mat(mre.X2());
+    
         acp.XU(acp.getMat(),mre.alpha1(), mre.alpha2());
-        
-        
-        ACPN acpn = new ACPN();
+//        ACPN acpn = new ACPN();
+        acpn.U1.setText(String.valueOf("U1 = (" + dtime.format(mre.alpha1()) + ";" + dtime.format(mre.alpha2()) + ")"));
         DefaultTableModel model = (DefaultTableModel)acpn.X1.getModel();
         for(int i=0; i<10; i++){
             Object O[] = {acp.getMat()[i][0],acp.getMat()[i][1]};
@@ -269,11 +283,25 @@ public class Principale extends javax.swing.JFrame {
             Object O[] = {acp.getXU()[i][0]};
             model2.addRow(O);
         }
+
+        // for the U2
+        mre.mat(mre.X1());
+        acp.XU(acp.getMat(),mre.alpha1(), mre.alpha2());
+        DefaultTableModel model3 = (DefaultTableModel)acpn.X2.getModel();
+        for(int i=0; i<10; i++){
+            Object O[] = {acp.getMat()[i][0],acp.getMat()[i][1]};
+            model3.addRow(O);
+        }
         
-        DecimalFormat dtime = new DecimalFormat("#.##"); 
-        acpn.U1.setText(String.valueOf("U1 = (" + dtime.format(mre.alpha1()) + ";" + dtime.format(mre.alpha2()) + ")"));
+        DefaultTableModel model4 = (DefaultTableModel)acpn.XU2.getModel();
+        for(int i=0; i<10; i++){
+            Object O[] = {acp.getXU()[i][0]};
+            model4.addRow(O);
+        }
+        
+        acpn.U2.setText(String.valueOf("U2 = (" + dtime.format(mre.alpha1()) + ";" + dtime.format(mre.alpha2()) + ")"));
         acpn.show();
-       
+//       
     }//GEN-LAST:event_ACP_nonNorméeActionPerformed
 
     /**
@@ -469,9 +497,9 @@ public class Principale extends javax.swing.JFrame {
             return (-delB()+Math.sqrt(del()))/(2*a);  
             }
             
-            public void mat(){
-                mat[0][0] = mat[0][0]-X2();
-                mat[1][1] = mat[1][1]-X2();
+            public void mat(double X){
+                mat[0][0] = mat[0][0]-X;
+                mat[1][1] = mat[1][1]-X;
             } 
             
             
@@ -493,11 +521,11 @@ public class Principale extends javax.swing.JFrame {
                 return (alpha2()/alpha1());
             }
             double b(double x,double y){
-                return y-(alpha2()/alpha1())*x;
+                return y-((alpha2()/alpha1())*x);
             }
-            double b2(double x,double y){
-                return y+(alpha2()/alpha1())*x;
-            }
+//            double b2(double x,double y){
+//                return y+(alpha2()/alpha1())*x;
+//            }
         }
         
         /**** la methode d'Analyse de composante principale ACP ****/
