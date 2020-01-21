@@ -108,6 +108,11 @@ public class Principale extends javax.swing.JFrame {
         });
 
         ACP_normée.setText("ACP normée");
+        ACP_normée.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ACP_norméeActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -248,23 +253,14 @@ public class Principale extends javax.swing.JFrame {
         DecimalFormat dtime = new DecimalFormat("#.##"); 
         mre.mat(mre.X2());
         acpn.U1.setText(String.valueOf("U1 = (" + dtime.format(mre.alpha1()) + ";" + dtime.format(mre.alpha2()) + ")"));
-        
-//        DecimalFormat dtime = new DecimalFormat("#.##"); 
-//        mcar mca = new mcar();
-//        mca.sai();
-        
         Acp acp = new Acp(Math.sqrt(mca.varx()), Math.sqrt(mca.vary()));
         acp.setMat(mca.getData());
         
         acp.X(Math.sqrt(mca.moyx()), Math.sqrt(mca.moyy()));
         acp.XX(acp.getMat());
         
-        // for the U1
-//        mrec mre = new mrec(mca.varx(),mca.vary(),mca.cov());
-//        mre.mat(mre.X2());
     
         acp.XU(acp.getMat(),mre.alpha1(), mre.alpha2());
-//        ACPN acpn = new ACPN();
         acpn.U1.setText(String.valueOf("U1 = (" + dtime.format(mre.alpha1()) + ";" + dtime.format(mre.alpha2()) + ")"));
         DefaultTableModel model = (DefaultTableModel)acpn.X1.getModel();
         for(int i=0; i<10; i++){
@@ -303,6 +299,61 @@ public class Principale extends javax.swing.JFrame {
         acpn.show();
 //       
     }//GEN-LAST:event_ACP_nonNorméeActionPerformed
+
+    private void ACP_norméeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ACP_norméeActionPerformed
+        ACP acpF = new ACP();
+        mcar mc = new mcar();
+        mc.sai();
+        
+        Acp acp = new Acp(Math.sqrt(mc.varx()), Math.sqrt(mc.vary()));
+        acp.setMat(mc.getData());
+        acp.XN(Math.sqrt(mc.moyx()), Math.sqrt(mc.moyy()));
+        acp.XX(acp.getMat());
+        
+        mrec mre = new mrec(acp.getXX()[1][1],acp.getXX()[0][1]);
+        DecimalFormat dtime = new DecimalFormat("#.##"); 
+        mre.mat(mre.X2());
+        acpF.U1.setText(String.valueOf("U1 = (" + dtime.format(mre.alpha1()) + ";" + dtime.format(mre.alpha2()) + ")"));
+        
+        DefaultTableModel model = (DefaultTableModel)acpF.X1.getModel();
+        for(int i=0; i<10; i++){
+            Object O[] = {acp.getMat()[i][0],acp.getMat()[i][1]};
+            model.addRow(O);
+        }
+        
+        DefaultTableModel model1 = (DefaultTableModel)acpF.XX.getModel();
+        for(int i=0; i<2; i++){
+            Object O[] = {acp.getXX()[i][0],acp.getXX()[i][1]};
+            model1.addRow(O);
+        }
+        
+        acp.XU(acp.getMat(),mre.alpha1(), mre.alpha2());
+        DefaultTableModel model2 = (DefaultTableModel)acpF.XU1.getModel();
+        for(int i=0; i<10; i++){
+            Object O[] = {acp.getXU()[i][0]};
+            model2.addRow(O);
+        }
+        
+        // for the U2
+        mre.mat(mre.X1());
+        acp.XU(acp.getMat(),mre.alpha1(), mre.alpha2());
+        DefaultTableModel model3 = (DefaultTableModel)acpF.X2.getModel();
+        for(int i=0; i<10; i++){
+            Object O[] = {acp.getMat()[i][0],acp.getMat()[i][1]};
+            model3.addRow(O);
+        }
+        
+        DefaultTableModel model4 = (DefaultTableModel)acpF.XU2.getModel();
+        for(int i=0; i<10; i++){
+            Object O[] = {acp.getXU()[i][0]};
+            model4.addRow(O);
+        }
+        
+        acpF.U2.setText(String.valueOf("U1 = (" + dtime.format(mre.alpha1()) + ";" + dtime.format(mre.alpha2()) + ")"));
+        
+        acpF.show();
+        this.hide();
+    }//GEN-LAST:event_ACP_norméeActionPerformed
 
     /**
      * @param args the command line arguments
@@ -474,7 +525,14 @@ public class Principale extends javax.swing.JFrame {
                 mat[0][1] = cov;
                 mat[1][0] = cov;
                 System.out.println("mat = " + mat[0][0] + " " + mat[1][1]);
-
+            }
+            
+            mrec(double diagonal,double coefCorr){
+                mat[0][0] = diagonal;
+                mat[1][1] = diagonal;
+                mat[0][1] = coefCorr;
+                mat[1][0] = coefCorr;
+                System.out.println("mat = " + mat[0][0] + " " + mat[1][1]);
             }
             
             double delB(){
@@ -595,6 +653,22 @@ public class Principale extends javax.swing.JFrame {
                     matXU[i][0] = ((matr[i][0] * al1) + (matr[i][1] * al2));
                 }
                 return matXU;
+            }
+            
+            // ACP normée 
+            // calculer la matrice (X = rij - moy(r))/math.sqrt(n)*l'ecartype; 
+            
+            double [][]XN(double moyx, double moyy){
+                for(int ligne=0;ligne<10;ligne++){
+                    for(int col=0;col<2;col++){
+                        if(col == 0){
+                            mat[ligne][col] = (mat[ligne][col] - moyx)/ (Math.sqrt(10)*sx);
+                        }else if(col == 1){
+                            mat[ligne][col] = (mat[ligne][col] - moyy)/ (Math.sqrt(10)*sy);
+                        }
+                    }   
+                }
+                return mat;
             }
             
         }

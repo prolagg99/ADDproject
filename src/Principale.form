@@ -213,6 +213,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="ACP norm&#xe9;e"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ACP_norm&#xe9;eActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
